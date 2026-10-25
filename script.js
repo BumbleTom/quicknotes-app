@@ -1,179 +1,168 @@
+ // =====================================================
+// QuickNotes - Project 1 Solution
+// =====================================================
+ 
+// ---------- 1. Select elements ----------
 const form = document.querySelector("#note-form");
-const noteInput = document.querySelector("#note-input");
+const input = document.querySelector("#note-input");
 const categorySelect = document.querySelector("#note-category");
-const searchInput = document.querySelector("#search-input");
-const notesList = document.querySelector("#notes-list");
-const noteCount = document.querySelector("#note-count");
 const errorMessage = document.querySelector("#error-message");
-
-// Load notes from localStorage
-let notes =
-  JSON.parse(localStorage.getItem("notes")) || [];
-
-// Save notes to localStorage
+const searchInput = document.querySelector("#search-input");
+const list = document.querySelector("#notes-list");
+const count = document.querySelector("#note-count");
+const clearAllBtn = document.querySelector("#clear-all");
+ 
+const STORAGE_KEY = "quicknotes";
+const MAX_LENGTH = 200;
+ 
+// ---------- 2. State (the single source of truth) ----------
+let notes = loadNotes();
+ 
+// ---------- 3. Storage helpers ----------
+function loadNotes() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (!saved) return [];
+  try {
+    return JSON.parse(saved);
+  } catch (error) {
+    console.error("Saved notes were damaged. Starting fresh.", error);
+    return [];
+  }
+}
+ 
 function saveNotes() {
-  localStorage.setItem(
-    "notes",
-    JSON.stringify(notes)
-  );
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
 }
-
-// Update note count
-function updateCount() {
-  const total = notes.length;
-
-  if (total === 0) {
-    noteCount.textContent =
-      "You have no notes yet.";
-  } else if (total === 1) {
-    noteCount.textContent =
-      "You have 1 note.";
-  } else {
-    noteCount.textContent =
-      `You have ${total} notes.`;
-  }
+ 
+// ---------- 4. Validation ----------
+function validate(text) {
+  if (text === "") return "Please type a note first.";
+  if (text.length > MAX_LENGTH) return "Notes must be 200 characters or fewer.";
+  return ""; // empty string = no error
 }
-
-// Render notes
-function render(searchText = "") {
-  notesList.textContent = "";
-
-  const filteredNotes = notes.filter(note =>
-    note.text
-      .toLowerCase()
-      .includes(searchText.toLowerCase())
+ 
+function showError(message) {
+  errorMessage.textContent = message;
+}
+ 
+// ---------- 5. Helpers for display ----------
+function capitalise(word) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+ 
+function countMessage(total) {
+  if (total === 0) return "You have no notes yet.";
+  if (total === 1) return "You have 1 note.";
+  return `You have ${total} notes.`;
+}
+ 
+function createNoteElement(note) {
+  const li = document.createElement("li");
+  li.classList.add("note", `category-${note.category}`);
+ 
+  const body = document.createElement("div");
+  body.classList.add("note-body");
+ 
+  const text = document.createElement("p");
+  text.classList.add("note-text");
+  text.textContent = note.text; // textContent keeps user input safe
+ 
+  const meta = document.createElement("div");
+  meta.classList.add("note-meta");
+ 
+  const badge = document.createElement("span");
+  badge.classList.add("badge");
+  badge.textContent = capitalise(note.category);
+ 
+  const date = document.createElement("span");
+  date.textContent = note.createdAt;
+ 
+  meta.append(badge, date);
+  body.append(text, meta);
+ 
+  const del = document.createElement("button");
+  del.type = "button";
+  del.classList.add("delete-btn");
+  del.textContent = "Delete";
+  del.addEventListener("click", () => deleteNote(note.id));
+ 
+  li.append(body, del);
+  return li;
+}
+ 
+// ---------- 6. Render ----------
+function render() {
+  const query = searchInput.value.trim().toLowerCase();
+ 
+  const visibleNotes = notes.filter((note) =>
+    note.text.toLowerCase().includes(query)
   );
-
-  if (
-    searchText.trim() !== "" &&
-    filteredNotes.length === 0
-  ) {
-    const item = document.createElement("li");
-
-    item.textContent =
-      "No notes match your search.";
-
-    notesList.appendChild(item);
-
-    updateCount();
-    return;
+ 
+  list.innerHTML = ""; // safe: we are only clearing, not inserting user text
+ 
+  if (notes.length > 0 && visibleNotes.length === 0) {
+    const empty = document.createElement("li");
+    empty.classList.add("empty-message");
+    empty.textContent = "No notes match your search.";
+    list.appendChild(empty);
   }
-
-  filteredNotes.forEach(note => {
-    const li = document.createElement("li");
-
-    li.classList.add("note-card");
-    li.classList.add(
-      `category-${note.category}`
-    );
-
-    const noteText =
-      document.createElement("p");
-
-    noteText.textContent = note.text;
-
-    const category =
-      document.createElement("span");
-
-    category.classList.add(
-      "category-label"
-    );
-
-    category.textContent =
-      note.category.toUpperCase();
-
-    const date =
-      document.createElement("small");
-
-    date.textContent =
-      `Created: ${note.createdAt}`;
-
-    const deleteButton =
-      document.createElement("button");
-
-    deleteButton.textContent =
-      "Delete";
-
-    deleteButton.addEventListener(
-      "click",
-      () => {
-        notes = notes.filter(
-          n => n.id !== note.id
-        );
-
-        saveNotes();
-        render(searchInput.value);
-      }
-    );
-
-    li.appendChild(noteText);
-    li.appendChild(category);
-    li.appendChild(
-      document.createElement("br")
-    );
-    li.appendChild(date);
-    li.appendChild(
-      document.createElement("br")
-    );
-    li.appendChild(deleteButton);
-
-    notesList.appendChild(li);
+ 
+  visibleNotes.forEach((note) => {
+    list.appendChild(createNoteElement(note));
   });
-
-  updateCount();
+ 
+  count.textContent = countMessage(notes.length);
+  clearAllBtn.hidden = notes.length === 0; // hide when there is nothing to clear
 }
-
-// Add new note
-form.addEventListener(
-  "submit",
-  event => {
-    event.preventDefault();
-
-    const text =
-      noteInput.value.trim();
-
-    const category =
-      categorySelect.value;
-
-    if (text === "") {
-      errorMessage.textContent =
-        "Please type a note first.";
-      return;
-    }
-
-    if (text.length > 200) {
-      errorMessage.textContent =
-        "Notes must be 200 characters or fewer.";
-      return;
-    }
-
-    errorMessage.textContent = "";
-
-    const newNote = {
-      id: Date.now(),
-      text: text,
-      category: category,
-      createdAt:
-        new Date().toLocaleString()
-    };
-
-    notes.push(newNote);
-
-    saveNotes();
-
-    render(searchInput.value);
-
-    noteInput.value = "";
+ 
+// ---------- 7. Actions ----------
+function addNote(text, category) {
+  const note = {
+    id: Date.now(),
+    text: text,
+    category: category,
+    createdAt: new Date().toLocaleString(),
+  };
+  notes.unshift(note); // newest note first
+  saveNotes();
+  render();
+}
+ 
+function deleteNote(id) {
+  notes = notes.filter((note) => note.id !== id);
+  saveNotes();
+  render();
+}
+ 
+function clearAll() {
+  if (!confirm("Delete all notes?")) return;
+  notes = [];
+  saveNotes();
+  render();
+}
+ 
+// ---------- 8. Event listeners ----------
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+ 
+  const text = input.value.trim();
+  const error = validate(text);
+ 
+  if (error) {
+    showError(error);
+    input.focus();
+    return; // stop here: do not add an invalid note
   }
-);
-
-// Search notes
-searchInput.addEventListener(
-  "input",
-  event => {
-    render(event.target.value);
-  }
-);
-
-// Initial render
+ 
+  showError("");
+  addNote(text, categorySelect.value);
+  input.value = "";
+  input.focus();
+});
+ 
+searchInput.addEventListener("input", render);
+clearAllBtn.addEventListener("click", clearAll);
+ 
+// ---------- 9. First render ----------
 render();
+ 
