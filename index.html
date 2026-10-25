@@ -1,84 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QuickNotes</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickNotes</title>
 
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
 
-<header>
-  <h1>QuickNotes</h1>
-  <p>Capture ideas before they disappear.</p>
-</header>
+    <header>
+        <h1>QuickNotes</h1>
+        <p>Capture ideas before they disappear.</p>
+    </header>
 
-<main>
+    <main>
 
-  <section>
-    <h2>Add a Note</h2>
+        <section>
+            <h2>Add a Note</h2>
 
-    <form id="note-form">
+            <form id="note-form">
 
-      <label for="note-input">Note</label>
+                <label for="note-input">Note</label>
 
-      <input
-        type="text"
-        id="note-input"
-        placeholder="Enter a note"
-      >
+                <input
+                    type="text"
+                    id="note-input"
+                    placeholder="Type your note here..."
+                    maxlength="200"
+                >
 
-      <label for="note-category">Category</label>
+                <label for="note-category">Category</label>
 
-      <select id="note-category">
+                <select id="note-category">
 
-        <option value="personal">
-          Personal
-        </option>
+                    <option value="personal">
+                        Personal
+                    </option>
 
-        <option value="work">
-          Work
-        </option>
+                    <option value="work">
+                        Work
+                    </option>
 
-        <option value="study">
-          Study
-        </option>
+                    <option value="study">
+                        Study
+                    </option>
 
-      </select>
+                </select>
 
-      <button type="submit">
-        Add Note
-      </button>
+                <button type="submit">
+                    Add Note
+                </button>
 
-    </form>
+            </form>
 
-    <p id="error-message"></p>
+            <p id="error-message"></p>
 
-  </section>
+        </section>
 
-  <section>
+        <section>
 
-    <h2>Your Notes</h2>
+            <h2>Your Notes</h2>
 
-    <input
-      type="text"
-      id="search-input"
-      placeholder="Search notes..."
-    >
+            <input
+                type="text"
+                id="search-input"
+                placeholder="Search notes..."
+            >
 
-    <p id="note-count"></p>
+            <p id="note-count">
+                You have no notes yet.
+            </p>
 
-    <ul id="notes-list"></ul>
+            <ul id="notes-list"></ul>
 
-  </section>
+        </section>
 
-</main>
+    </main>
 
-<footer>
-  <p>QuickNotes Project</p>
-</footer>
+    <footer>
+        <p>&copy; 2026 QuickNotes. Built during Web Foundations.</p>
+    </footer>
 
 </body>
 </html>
