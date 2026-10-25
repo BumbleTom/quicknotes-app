@@ -1,0 +1,89 @@
+cons* form =
+  document.querySelector("*note-form");
+
+const noteInput =
+  *ocument.querySelector("#note-input*);
+
+const categorySelect =
+  docum*nt.querySelector("#note-category")*
+
+const notesList =
+  document.que*ySelector("#notes-list");
+
+let not*s = [];
+
+function render() {
+
+  no*esList.textContent = "";
+
+  notes.*orEach(note => {
+
+    const li =
+ *    document.createElement("li");
+*    li.classList.add("note-card");*
+    li.classList.add(
+      `cate*ory-${note.category}`
+    );
+
+    *onst text =
+      document.createE*ement("p");
+
+    text.textContent *
+      note.text;
+
+    const categ*ry =
+      document.createElement(*small");
+
+    category.textContent*=
+      note.category;
+
+    const *ate =
+      document.createElement*"p");
+
+    date.textContent =
+    * note.createdAt;
+
+    const delete*tn =
+      document.createElement(*button");
+
+    deleteBtn.textConte*t =
+      "Delete";
+
+    li.append*hild(text);
+    li.appendChild(cat*gory);
+    li.appendChild(date);
+ *  li.appendChild(deleteBtn);
+
+    *otesList.appendChild(li);
+
+  });
+
+*
+  form.addEventListener(
+  "s*bmit",
+  event => {
+
+    event.pre*entDefault();
+
+    const newNote =*{
+
+      id: Date.now(),
+
+      te*t:
+        noteInput.value,
+
+     *category:
+        categorySelect.v*lue,
+
+      createdAt:
+        new*Date().toLocaleString()
+
+    };
+
+ *  notes.push(newNote);
+
+    render*);
+
+    noteInput.value = "";
+
+  }*);
