@@ -87,3 +87,47 @@ function render() {
     noteInput.value = "";
 
   }*);
+  const errorMessage*=
+  document.querySelector("#error*message");
+
+const noteCount =
+  do*ument.querySelector("#note-count")*
+  function*updateCount() {
+
+  if (notes.lengt* === 0) {
+
+    noteCount.textContent =
+      "You have no notes yet.";
+
+  }
+
+  else if (notes.length === 1) {
+
+    noteCount.textContent =
+      "You have 1 note.";
+
+  }
+
+  else {
+
+    noteCount.textContent =
+      `You have ${notes.length} notes.`;
+
+  }
+
+}
+deleteBtn.addEventListener(
+  "click",
+  () => {
+
+    notes =
+      notes.filter(
+        n => n.id !== note.id
+      );
+
+    render();
+    updateCount();
+
+  }
+);
+updateCount();
