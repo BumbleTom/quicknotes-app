@@ -131,3 +131,15 @@ deleteBtn.addEventListener(
   }
 );
 updateCount();
+const searchInput =
+ document.querySelector(
+   "#search-input"
+ );
+ function saveNotes() {
+
+ localStorage.setItem(
+   "notes",
+   JSON.stringify(notes)
+ );
+
+}
